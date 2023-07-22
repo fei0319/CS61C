@@ -1,0 +1,2 @@
+sanity/sanity.dict sanity/sanity.in sanity/sanity.ref
+binary_edge/binary_edge.dict ../philphix ../philphix
