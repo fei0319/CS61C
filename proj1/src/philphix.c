@@ -68,11 +68,13 @@ int main(int argc, char **argv) {
  * to a char * (null terminated string)
  */
 unsigned int stringHash(void *s) {
-  // -- TODO --
-  fprintf(stderr, "need to implement stringHash\n");
-
-  /* To suppress compiler warning until you implement this function, */
-  return 0;
+  unsigned int x = 0u;
+  char *str = s;
+  while (*str != '\0') {
+    x = x * 19u + (unsigned int)(*str);
+    ++str;
+  }
+  return x;
 }
 
 /*
@@ -80,10 +82,35 @@ unsigned int stringHash(void *s) {
  * (case sensitive comparison) and 0 otherwise.
  */
 int stringEquals(void *s1, void *s2) {
-  // -- TODO --
-  fprintf(stderr, "You need to implement stringEquals");
-  /* To suppress compiler warning until you implement this function */
-  return 0;
+  char *str1 = s1, *str2 = s2;
+  while (*str1 != '\0' && *str2 != '\0') {
+    if (*str1 != *str2) {
+      return 0;
+    }
+    ++str1;
+    ++str2;
+  }
+  return *str1 == '\0' && *str2 == '\0';
+}
+
+char *readString(FILE *fp) {
+  char ch = fgetc(fp);
+  while (ch == ' ' || ch == '\n') {
+    ch = fgetc(fp);
+  }
+
+  int len = 0, size = 5;
+  char *s = malloc(size * sizeof(char));
+  while (ch != ' ' && ch != '\n' && ch != EOF) {
+    s[len++] = ch;
+    ch = getc(fp);
+    if (len >= size) {
+      size *= 2;
+      s = realloc(s, size * sizeof(char));
+    }
+  }
+  s[len++] = '\0';
+  return realloc(s, len * sizeof(char));
 }
 
 /*
@@ -99,8 +126,47 @@ int stringEquals(void *s1, void *s2) {
  * to cleanly exit the program.
  */
 void readDictionary(char *dictName) {
-  // -- TODO --
-  fprintf(stderr, "You need to implement readDictionary\n");
+  FILE *fp = fopen(dictName, "r");
+
+  if (fp) {
+    while (!feof(fp)) {
+      char *word = readString(fp), *replacement = readString(fp);
+      fprintf(stderr, "w:%s r:%s\n", word, replacement);
+      insertData(dictionary, word, replacement);
+    }
+  } else {
+    fprintf(stderr, "The specified file does not exist\n");
+    exit(61);
+  }
+}
+
+typedef struct Str {
+    char *s;
+    size_t length;
+    size_t size;
+} Str;
+
+Str *createStr(void) {
+    Str *str = malloc(sizeof(Str));
+    str->length = 0;
+    str->size = 2;
+    str->s = malloc(sizeof(char) * str->size);
+    str->s[0] = '\0';
+    return str;
+}
+
+void append(Str *str, char ch) {
+    if (str->length + 2 > str->size) {
+        str->size *= 2;
+        str->s = realloc(str->s, str->size);
+    }
+    str->s[str->length++] = ch;
+    str->s[str->length] = '\0';
+}
+
+void delete(Str *str) {
+    free(str->s);
+    free(str);
 }
 
 /*
@@ -126,6 +192,51 @@ void readDictionary(char *dictName) {
  * final bit of your grade, you cannot assume words have a bounded length.
  */
 void processInput() {
-  // -- TODO --
-  fprintf(stderr, "You need to implement processInput\n");
+  char ch = fgetc(stdin);
+  Str *s = createStr();
+  
+  while (ch != EOF) {
+    append(s, ch);
+    ch = fgetc(stdin);
+  }
+
+  Str *t = createStr();
+  char *iter = s->s;
+  ch = *(iter++);
+  while (ch != '\0') {
+      if (isalpha(ch)) {
+          Str *word = createStr(), *original_word = createStr();
+          while (isalpha(ch)) {
+              append(word, ch);
+              append(original_word, ch);
+              ch = *(iter++);
+          }
+          char *replacement = findData(dictionary, word->s);
+          if (replacement == NULL) {
+              for (int i = 1; i < word->length; ++i) {
+                  word->s[i] = tolower(word->s[i]);
+              }
+              replacement = findData(dictionary, word->s);
+          }
+          if (replacement == NULL) {
+              word->s[0] = tolower(word->s[0]);
+              replacement = findData(dictionary, word->s);
+          }
+          if (replacement == NULL) {
+              replacement = original_word->s;
+          }
+          while (*replacement != '\0') {
+            append(t, *(replacement++));
+          }
+          delete(word);
+          delete(original_word);
+      } else {
+          append(t, ch);
+          ch = *(iter++);
+      }
+  }
+
+  delete(s);
+  fprintf(stdout, "%s", t->s);
+  delete(t);
 }
