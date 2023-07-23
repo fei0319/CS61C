@@ -35,11 +35,6 @@ HashTable *createHashTable(int size, unsigned int (*hashFunction)(void *),
  * call insertData(someHashTable, (void *) string, (void *) string).
  */
 void insertData(HashTable *table, void *key, void *data) {
-  // -- TODO --
-  // HINT:
-  // 1. Find the right hash bucket location with table->hashFunction.
-  // 2. Allocate a new hash bucket struct.
-  // 3. Append to the linked list or create it if it does not yet exist. 
   unsigned int pos = table->hashFunction(key) % table->size;
   
   HashBucket *bucket = malloc(sizeof(HashBucket));
@@ -55,10 +50,6 @@ void insertData(HashTable *table, void *key, void *data) {
  * It returns NULL if the key is not found. 
  */
 void *findData(HashTable *table, void *key) {
-  // -- TODO --
-  // HINT:
-  // 1. Find the right hash bucket with table->hashFunction.
-  // 2. Walk the linked list and check for equality with table->equalFunction.
   unsigned int pos = table->hashFunction(key) % table->size;
 
   HashBucket *bucket  = table->data[pos];
