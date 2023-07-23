@@ -134,6 +134,7 @@ void readDictionary(char *dictName) {
       fprintf(stderr, "w:%s r:%s\n", word, replacement);
       insertData(dictionary, word, replacement);
     }
+    fclose(fp);
   } else {
     fprintf(stderr, "The specified file does not exist\n");
     exit(61);
@@ -143,28 +144,28 @@ void readDictionary(char *dictName) {
 typedef struct Str {
     char *s;
     size_t length;
-    size_t size;
+    size_t capacity;
 } Str;
 
 Str *createStr(void) {
     Str *str = malloc(sizeof(Str));
     str->length = 0;
-    str->size = 2;
-    str->s = malloc(sizeof(char) * str->size);
+    str->capacity = 2;
+    str->s = malloc(sizeof(char) * str->capacity);
     str->s[0] = '\0';
     return str;
 }
 
 void append(Str *str, char ch) {
-    if (str->length + 2 > str->size) {
-        str->size *= 2;
-        str->s = realloc(str->s, str->size);
+    if (str->length + 2 > str->capacity) {
+        str->capacity *= 2;
+        str->s = realloc(str->s, str->capacity);
     }
     str->s[str->length++] = ch;
     str->s[str->length] = '\0';
 }
 
-void delete(Str *str) {
+void freeStr(Str *str) {
     free(str->s);
     free(str);
 }
@@ -192,18 +193,19 @@ void delete(Str *str) {
  * final bit of your grade, you cannot assume words have a bounded length.
  */
 void processInput() {
-  char ch = fgetc(stdin);
-  Str *s = createStr();
-  
-  while (ch != EOF) {
-    append(s, ch);
-    ch = fgetc(stdin);
+  Str* s = createStr();
+  char buffer[BUFSIZ];
+  size_t bytesRead;
+
+  while ((bytesRead = fread(buffer, 1, sizeof(buffer), stdin)) > 0) {
+    for (size_t i = 0; i < bytesRead; i++) {
+      append(s, buffer[i]);
+    }
   }
 
   Str *t = createStr();
-  char *iter = s->s;
-  ch = *(iter++);
-  while (ch != '\0') {
+  char *iter = s->s, *end = iter + s->length, ch = *(iter++);
+  while (iter != end + 1) {
       if (isalpha(ch)) {
           Str *word = createStr(), *original_word = createStr();
           while (isalpha(ch)) {
@@ -228,15 +230,15 @@ void processInput() {
           while (*replacement != '\0') {
             append(t, *(replacement++));
           }
-          delete(word);
-          delete(original_word);
+          freeStr(word);
+          freeStr(original_word);
       } else {
           append(t, ch);
           ch = *(iter++);
       }
   }
 
-  delete(s);
-  fprintf(stdout, "%s", t->s);
-  delete(t);
+    fwrite(t->s, 1, t->length, stdout);
+    freeStr(s);
+    freeStr(t);
 }
