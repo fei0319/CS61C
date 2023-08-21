@@ -21,6 +21,32 @@ class TestAbs(TestCase):
         t.call("abs")
         t.check_scalar("a0", 1)
         t.execute()
+        
+    def test_minus_one(self):
+        # Indicates we are creating the test for the `abs.s` file
+        t = AssemblyTest(self, "abs.s")
+        # Setting the argument register a0 to have value of -1
+        t.input_scalar("a0", -1)
+        # Calling the abs function
+        t.call("abs")
+        # The a0 register is now the return value
+        # Checking if a0 is now 1
+        t.check_scalar("a0", 1)
+        t.execute()
+
+    def test_114514(self):
+        t = AssemblyTest(self, "abs.s")
+        t.input_scalar("a0", -114514)
+        t.call("abs")
+        t.check_scalar("a0", 114514)
+        t.execute()
+    
+    def test_1919810(self):
+        t = AssemblyTest(self, "abs.s")
+        t.input_scalar("a0", 1919810)
+        t.call("abs")
+        t.check_scalar("a0", 1919810)
+        t.execute()
 
     @classmethod
     def tearDownClass(cls):
@@ -41,6 +67,36 @@ class TestRelu(TestCase):
         # check that the array0 was changed appropriately
         t.check_array(array0, [1, 0, 3, 0, 5, 0, 7, 0, 9])
         # generate the `assembly/TestRelu_test_simple.s` file and run it through venus
+        t.execute()
+    
+    def test_random(self):
+        from random import randint
+        t = AssemblyTest(self, "relu.s")
+        
+        original_arr = [randint(-2**31, 2**31-1) for _ in range(randint(10, 20))]
+        arr = t.array(original_arr)
+        t.input_array("a0", arr)
+        t.input_scalar("a1", len(arr))
+        t.call("relu")
+        t.check_array(arr, [max(x, 0) for x in original_arr])
+
+        t.execute()
+    
+    def test_multiple(self):
+        for _ in range(10):
+            self.test_random()
+
+    def test_error(self):
+        from random import randint
+        t = AssemblyTest(self, "relu.s")
+        
+        original_arr = [randint(-2**31, 2**31-1) for _ in range(randint(10, 20))]
+        arr = t.array(original_arr)
+        t.input_array("a0", arr)
+        t.input_scalar("a1", 0)
+        t.call("relu")
+        t.check_scalar("a0", 32)
+
         t.execute()
 
     @classmethod
