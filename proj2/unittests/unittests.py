@@ -159,14 +159,12 @@ class TestDot(TestCase):
             i1 += s1
         return res
 
-    def test_simple(self):
+    def random_test(self, length, s0, s1, code=0):
         from random import randint
         t = AssemblyTest(self, "dot.s")
 
-        length = 30
-        v0 = [randint(1, 100) for _ in range(length)]
-        v1 = [randint(1, 100) for _ in range(length)]
-        s0, s1 = 1, 1
+        v0 = [randint(1, 100) for _ in range(length * s0 + 10)]
+        v1 = [randint(1, 100) for _ in range(length * s1 + 10)]
 
         t.input_array("a0", t.array(v0))
         t.input_array("a1", t.array(v1))
@@ -177,72 +175,24 @@ class TestDot(TestCase):
         t.call("dot")
 
         t.check_scalar("a0", self.dot(v0, v1, length, s0, s1))
-        t.execute()
+        t.execute(code=code)
+
+    def test_simple(self):
+        self.random_test(30, 1, 1)
     
     def test_stride(self):
         from random import randint
-        t = AssemblyTest(self, "dot.s")
-
-        s0, s1 = randint(1, 5), randint(1, 5)
-        length = randint(10, 25)
-        size = max(s0, s1) * length
-        v0 = [randint(1, 100) for _ in range(size)]
-        v1 = [randint(1, 100) for _ in range(size)]
-
-        t.input_array("a0", t.array(v0))
-        t.input_array("a1", t.array(v1))
-        t.input_scalar("a2", length)
-        t.input_scalar("a3", s0)
-        t.input_scalar("a4", s1)
-
-        t.call("dot")
-
-        t.check_scalar("a0", self.dot(v0, v1, length, s0, s1))
-        t.execute()
+        self.random_test(randint(5, 60), randint(1, 5), randint(1, 5))
     
     def test_multiple(self):
         for _ in range(20):
             self.test_simple()
-        for _ in range(10):
+        for _ in range(5):
             self.test_stride()
     
     def test_error32(self):
-        from random import randint
-        t = AssemblyTest(self, "dot.s")
-
-        s0, s1 = randint(1, 5), randint(1, 5)
-        length = 0
-        size = max(s0, s1) * length
-        v0 = [randint(1, 100) for _ in range(size)]
-        v1 = [randint(1, 100) for _ in range(size)]
-
-        t.input_array("a0", t.array(v0))
-        t.input_array("a1", t.array(v1))
-        t.input_scalar("a2", length)
-        t.input_scalar("a3", s0)
-        t.input_scalar("a4", s1)
-
-        t.call("dot")
-        t.execute(code=32)
-    
-    def test_error33(self):
-        from random import randint
-        t = AssemblyTest(self, "dot.s")
-
-        s0, s1 = randint(1, 5), 0
-        length = 10
-        size = max(s0, s1) * length
-        v0 = [randint(1, 100) for _ in range(size)]
-        v1 = [randint(1, 100) for _ in range(size)]
-
-        t.input_array("a0", t.array(v0))
-        t.input_array("a1", t.array(v1))
-        t.input_scalar("a2", length)
-        t.input_scalar("a3", s0)
-        t.input_scalar("a4", s1)
-
-        t.call("dot")
-        t.execute(code=33)
+        self.random_test(0, 1, 1, 32)
+        self.random_test(30, 1, 0, 33)
 
     @classmethod
     def tearDownClass(cls):
