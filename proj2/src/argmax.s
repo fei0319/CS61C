@@ -29,11 +29,12 @@ init:
     # s1: greatest value
     # s2: current index
     # s3: current value
-    addi sp sp -16
+    addi sp sp -20
     sw s0 0(sp)
     sw s1 4(sp)
     sw s2 8(sp)
     sw s3 12(sp)
+    sw ra 16(sp)
 
     li s0 0
     lw s1 0(a0)
@@ -68,7 +69,8 @@ loop_end:
     lw s1 4(sp)
     lw s2 8(sp)
     lw s3 12(sp)
-    addi sp sp 16
+    lw ra 16(sp)
+    addi sp sp 20
 
 
     ret
