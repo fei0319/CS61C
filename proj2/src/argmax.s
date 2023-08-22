@@ -19,9 +19,8 @@ argmax:
     # Prologue
 
     blt zero a1 init
-    li a0 32
-    li a1 0
-    j exit
+    li a1 32
+    j exit2
 
 init:
     
