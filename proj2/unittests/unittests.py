@@ -151,19 +151,101 @@ class TestArgmax(TestCase):
 
 
 class TestDot(TestCase):
+    @classmethod
+    def dot(cls, v0, v1, n, s0, s1):
+        i0, i1 = 0, 0
+        res = 0
+        for i in range(n):
+            res += v0[i0] * v1[i1]
+            i0 += s0
+            i1 += s1
+        return res
+
     def test_simple(self):
+        from random import randint
         t = AssemblyTest(self, "dot.s")
-        # create arrays in the data section
-        raise NotImplementedError("TODO")
-        # TODO
-        # load array addresses into argument registers
-        # TODO
-        # load array attributes into argument registers
-        # TODO
-        # call the `dot` function
+
+        length = 30
+        v0 = [randint(1, 100) for _ in range(length)]
+        v1 = [randint(1, 100) for _ in range(length)]
+        s0, s1 = 1, 1
+
+        t.input_array("a0", t.array(v0))
+        t.input_array("a1", t.array(v1))
+        t.input_scalar("a2", length)
+        t.input_scalar("a3", s0)
+        t.input_scalar("a4", s1)
+
         t.call("dot")
-        # check the return value
-        # TODO
+
+        t.check_scalar("a0", self.dot(v0, v1, length, s0, s1))
+        t.execute()
+    
+    def test_stride(self):
+        from random import randint
+        t = AssemblyTest(self, "dot.s")
+
+        s0, s1 = randint(1, 5), randint(1, 5)
+        length = randint(10, 25)
+        size = max(s0, s1) * length
+        v0 = [randint(1, 100) for _ in range(size)]
+        v1 = [randint(1, 100) for _ in range(size)]
+
+        t.input_array("a0", t.array(v0))
+        t.input_array("a1", t.array(v1))
+        t.input_scalar("a2", length)
+        t.input_scalar("a3", s0)
+        t.input_scalar("a4", s1)
+
+        t.call("dot")
+
+        t.check_scalar("a0", self.dot(v0, v1, length, s0, s1))
+        t.execute()
+    
+    def test_multiple(self):
+        for _ in range(20):
+            self.test_simple()
+        for _ in range(10):
+            self.test_stride()
+    
+    def test_error32(self):
+        from random import randint
+        t = AssemblyTest(self, "dot.s")
+
+        s0, s1 = randint(1, 5), randint(1, 5)
+        length = 0
+        size = max(s0, s1) * length
+        v0 = [randint(1, 100) for _ in range(size)]
+        v1 = [randint(1, 100) for _ in range(size)]
+
+        t.input_array("a0", t.array(v0))
+        t.input_array("a1", t.array(v1))
+        t.input_scalar("a2", length)
+        t.input_scalar("a3", s0)
+        t.input_scalar("a4", s1)
+
+        t.call("dot")
+        t.check_scalar("a0", 32)
+        t.execute()
+    
+    def test_error33(self):
+        from random import randint
+        t = AssemblyTest(self, "dot.s")
+
+        s0, s1 = randint(1, 5), 0
+        length = 10
+        size = max(s0, s1) * length
+        v0 = [randint(1, 100) for _ in range(size)]
+        v1 = [randint(1, 100) for _ in range(size)]
+
+        t.input_array("a0", t.array(v0))
+        t.input_array("a1", t.array(v1))
+        t.input_scalar("a2", length)
+        t.input_scalar("a3", s0)
+        t.input_scalar("a4", s1)
+
+        t.call("dot")
+        t.check_scalar("a0", 33)
         t.execute()
 
     @classmethod
