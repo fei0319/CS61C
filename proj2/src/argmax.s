@@ -21,7 +21,7 @@ argmax:
     blt zero a1 init
     li a0 32
     li a1 0
-    ret
+    j exit
 
 init:
     

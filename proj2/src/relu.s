@@ -23,7 +23,7 @@ relu:
     # exit with error code 32
     li a0 32
     li a1 0
-    ret
+    j exit
 
 loop_start:
 
