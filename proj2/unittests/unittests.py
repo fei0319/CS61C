@@ -95,9 +95,8 @@ class TestRelu(TestCase):
         t.input_array("a0", arr)
         t.input_scalar("a1", 0)
         t.call("relu")
-        t.check_scalar("a0", 32)
 
-        t.execute()
+        t.execute(code=32)
 
     @classmethod
     def tearDownClass(cls):
@@ -142,8 +141,7 @@ class TestArgmax(TestCase):
         t.input_array("a0", arr)
         t.input_scalar("a1", 0)
         t.call("argmax")
-        t.check_scalar("a0", 32)
-        t.execute()
+        t.execute(code=32)
 
     @classmethod
     def tearDownClass(cls):
@@ -225,8 +223,7 @@ class TestDot(TestCase):
         t.input_scalar("a4", s1)
 
         t.call("dot")
-        t.check_scalar("a0", 32)
-        t.execute()
+        t.execute(code=32)
     
     def test_error33(self):
         from random import randint
@@ -245,8 +242,7 @@ class TestDot(TestCase):
         t.input_scalar("a4", s1)
 
         t.call("dot")
-        t.check_scalar("a0", 33)
-        t.execute()
+        t.execute(code=33)
 
     @classmethod
     def tearDownClass(cls):
@@ -266,16 +262,21 @@ class TestMatmul(TestCase):
         array_out = t.array([0] * len(result))
 
         # load address of input matrices and set their dimensions
-        raise NotImplementedError("TODO")
-        # TODO
-        # load address of output array
-        # TODO
+        t.input_array("a0", array0)
+        t.input_scalar("a1", m0_rows)
+        t.input_scalar("a2", m0_cols)
+
+        t.input_array("a3", array1)
+        t.input_scalar("a4", m1_rows)
+        t.input_scalar("a5", m1_cols)
+
+        t.input_array("a6", array_out)
 
         # call the matmul function
         t.call("matmul")
 
         # check the content of the output array
-        # TODO
+        t.check_array(array_out, result)
 
         # generate the assembly file and run it through venus, we expect the simulation to exit with code `code`
         t.execute(code=code)
@@ -285,6 +286,39 @@ class TestMatmul(TestCase):
             [1, 2, 3, 4, 5, 6, 7, 8, 9], 3, 3,
             [1, 2, 3, 4, 5, 6, 7, 8, 9], 3, 3,
             [30, 36, 42, 66, 81, 96, 102, 126, 150]
+        )
+    
+    def test_random(self):
+        from random import randint
+        from numpy import array as matrix
+
+        n, m, k = (randint(3, 20) for _ in range(3))
+        a = matrix([randint(0, 10) for _ in range(n * k)]).reshape(n, k)
+        b = matrix([randint(0, 10) for _ in range(k * m)]).reshape(k, m)
+        result = a.dot(b)
+
+        self.do_matmul(
+            list(a.reshape(n * k)), n, k,
+            list(b.reshape(k * m)), k, m,
+            list(result.reshape(n * m))
+        )
+
+    def test_multiple(self):
+        for _ in range(20):
+            self.test_random()
+
+    def test_error(self):
+        self.do_matmul(
+            [5, 6, 3], 1, 3,
+            [3, 9, 0], 4, 1,
+            [3],
+            code=34
+        )
+        self.do_matmul(
+            [1], 0, 4,
+            [2], 4, 5,
+            [3],
+            code=34
         )
 
     @classmethod
