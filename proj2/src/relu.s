@@ -21,9 +21,8 @@ relu:
     li s0 1
     bge a1 s0 loop_start
     # exit with error code 32
-    li a0 32
-    li a1 0
-    j exit
+    li a1 32
+    j exit2
 
 loop_start:
 
