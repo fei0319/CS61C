@@ -108,17 +108,41 @@ class TestArgmax(TestCase):
     def test_simple(self):
         t = AssemblyTest(self, "argmax.s")
         # create an array in the data section
-        raise NotImplementedError("TODO")
-        # TODO
+        original_arr = [1, 1, 4, 5, 1, 4]
+        arr = t.array(original_arr)
         # load address of the array into register a0
-        # TODO
+        t.input_array("a0", arr)
         # set a1 to the length of the array
-        # TODO
+        t.input_scalar("a1", len(arr))
         # call the `argmax` function
-        # TODO
+        t.call("argmax")
         # check that the register a0 contains the correct output
-        # TODO
+        t.check_scalar("a0", max(range(len(arr)), key=lambda x: original_arr[x]))
         # generate the `assembly/TestArgmax_test_simple.s` file and run it through venus
+        t.execute()
+
+    def test_random(self):
+        t = AssemblyTest(self, "argmax.s")
+        from random import randint
+        original_arr = [randint(-5, 5) for _ in range(randint(20, 100))]
+        arr = t.array(original_arr)
+        t.input_array("a0", arr)
+        t.input_scalar("a1", len(arr))
+        t.call("argmax")
+        t.check_scalar("a0", max(range(len(arr)), key=lambda x: original_arr[x]))
+        t.execute()
+    
+    def test_multiple(self):
+        for _ in range(15):
+            self.test_random()
+    
+    def test_error(self):
+        t = AssemblyTest(self, "argmax.s")
+        arr = t.array([1, 1, 4, 5, 1, 4])
+        t.input_array("a0", arr)
+        t.input_scalar("a1", 0)
+        t.call("argmax")
+        t.check_scalar("a0", 32)
         t.execute()
 
     @classmethod
