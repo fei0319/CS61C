@@ -31,10 +31,11 @@ dot:
     # s0: result
     # s1: tmp
     # s2: tmp
-    addi sp sp -12
+    addi sp sp -16
     sw s0 0(sp)
     sw s1 4(sp)
     sw s2 8(sp)
+    sw ra 12(sp)
 
     li s0 0
 
@@ -59,7 +60,8 @@ loop_end:
     lw s0 0(sp)
     lw s1 4(sp)
     lw s2 8(sp)
-    addi sp sp 12
+    lw ra 12(sp)
+    addi sp sp 16
 
     
     ret
