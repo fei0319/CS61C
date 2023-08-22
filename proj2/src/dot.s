@@ -67,9 +67,9 @@ loop_end:
     ret
 
 exit32:
-    li a0 32
-    j exit
+    li a1 32
+    j exit2
 
 exit33:
-    li a0 33
-    j exit
+    li a1 33
+    j exit2
