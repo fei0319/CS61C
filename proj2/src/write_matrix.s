@@ -40,6 +40,8 @@ write_matrix:
     mv a1 s0
     li a2 1
     jal ra fopen
+    li t0 -1
+    beq a0 t0 exit64
     mv s0 a0
 
     # s0: file descriptor
@@ -63,6 +65,8 @@ write_matrix:
     li a3 2
     li a4 4
     jal ra fwrite
+    li t0 2
+    bne a0 t0 exit67
 
     # Free s4
     mv a0 s4
@@ -74,10 +78,14 @@ write_matrix:
     mul a3 s2 s3
     li a4 4
     jal ra fwrite
+    mul t0 s2 s3
+    bne a0 t0 exit67
 
     # Close the file
     mv a1 s0
     jal ra fclose
+    li t0 -1
+    beq a0 t0 exit65
     
     lw ra 0(sp)
     lw s0 4(sp)
@@ -88,3 +96,15 @@ write_matrix:
     addi sp sp 24
 
     ret
+
+exit64:
+    li a1 64
+    j exit2
+
+exit67:
+    li a1 67
+    j exit2
+
+exit65:
+    li a1 65
+    j exit2
