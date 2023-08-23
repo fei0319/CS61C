@@ -23,18 +23,68 @@
 #   this function terminates the program with error code 65
 # ==============================================================================
 write_matrix:
+    addi sp sp -24
+    sw ra 0(sp)
+    sw s0 4(sp)
+    sw s1 8(sp)
+    sw s2 12(sp)
+    sw s3 16(sp)
+    sw s4 20(sp)
 
-    # Prologue
+    mv s0 a0
+    mv s1 a1
+    mv s2 a2
+    mv s3 a3
 
+    # Get the file descriptor
+    mv a1 s0
+    li a2 1
+    jal ra fopen
+    mv s0 a0
 
+    # s0: file descriptor
+    # s1: matrix pointer
+    # s2: #rows
+    # s3: #cols
+    # s4:
 
+    # Allocate memory of 8 bytes and save its pointer to s4
+    li a0 8
+    jal ra malloc
+    mv s4 a0
 
+    # Put #rows and #cols to s4
+    sw s2 0(s4)
+    sw s3 4(s4)
 
+    # Write rows and cols
+    mv a1 s0
+    mv a2 s4
+    li a3 2
+    li a4 4
+    jal ra fwrite
 
+    # Free s4
+    mv a0 s4
+    jal ra free
 
+    # Write matrix data
+    mv a1 s0
+    mv a2 s1
+    mul a3 s2 s3
+    li a4 4
+    jal ra fwrite
 
-
-    # Epilogue
-
+    # Close the file
+    mv a1 s0
+    jal ra fclose
+    
+    lw ra 0(sp)
+    lw s0 4(sp)
+    lw s1 8(sp)
+    lw s2 12(sp)
+    lw s3 16(sp)
+    lw s4 20(sp)
+    addi sp sp 24
 
     ret
