@@ -278,30 +278,38 @@ class TestMatmul(TestCase):
 
 class TestReadMatrix(TestCase):
 
-    def do_read_matrix(self, fail='', code=0):
+    def do_read_matrix(self, file_name, fail='', code=0):
         t = AssemblyTest(self, "read_matrix.s")
         # load address to the name of the input file into register a0
-        t.input_read_filename("a0", "inputs/test_read_matrix/test_input.bin")
+        t.input_read_filename("a0", file_name + '.bin')
 
         # allocate space to hold the rows and cols output parameters
         rows = t.array([-1])
         cols = t.array([-1])
 
         # load the addresses to the output parameters into the argument registers
-        raise NotImplementedError("TODO")
-        # TODO
+        t.input_array("a1", rows)
+        t.input_array("a2", cols)
 
         # call the read_matrix function
         t.call("read_matrix")
 
         # check the output from the function
-        # TODO
+        with open(f'../{file_name}.txt', 'r') as f:
+            arr = list(map(int, f.read().split()))
+            n = arr[0]
+            m = arr[1]
+            arr = arr[2:]
+
+        t.check_array(rows, [n])
+        t.check_array(cols, [m])
+        t.check_array_pointer("a0", arr)
 
         # generate assembly and run it through venus
         t.execute(fail=fail, code=code)
 
     def test_simple(self):
-        self.do_read_matrix()
+        self.do_read_matrix(file_name="inputs/test_read_matrix/test_input")
 
     @classmethod
     def tearDownClass(cls):
