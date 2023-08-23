@@ -311,6 +311,12 @@ class TestReadMatrix(TestCase):
     def test_simple(self):
         self.do_read_matrix(file_name="inputs/test_read_matrix/test_input")
 
+    def test_error(self):
+        self.do_read_matrix(file_name="inputs/test_read_matrix/test_input", fail="malloc", code=48)
+        self.do_read_matrix(file_name="inputs/test_read_matrix/test_input", fail="fopen", code=64)
+        self.do_read_matrix(file_name="inputs/test_read_matrix/test_input", fail="fread", code=66)
+        self.do_read_matrix(file_name="inputs/test_read_matrix/test_input", fail="fclose", code=65)
+
     @classmethod
     def tearDownClass(cls):
         print_coverage("read_matrix.s", verbose=False)

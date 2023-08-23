@@ -49,6 +49,7 @@ read_matrix:
     # Allocate memory to store 2 integers, pointer to which is s3
     li a0 8
     jal ra malloc
+    beq a0 zero exit48
     mv s3 a0
 
     # Read the row and column from the file
@@ -87,6 +88,8 @@ read_matrix:
     # Close the file
     mv a1 s0
     jal ra fclose
+    li t0 -1
+    beq t0 a0 exit65
 
     mv a0 s3
     
@@ -101,10 +104,18 @@ read_matrix:
 
     ret
 
+exit48:
+    li a1 48
+    j exit2
+
 exit64:
     li a1 64
     j exit2
 
 exit66:
     li a1 66
+    j exit2
+
+exit65:
+    li a1 65
     j exit2
