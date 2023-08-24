@@ -366,21 +366,32 @@ class TestClassify(TestCase):
         t.include("write_matrix.s")
         return t
 
-    def test_simple0_input0(self):
+    def base_test(self, fail='', code=0, extra_arg=False):
         t = self.make_test()
         out_file = "outputs/test_basic_main/student0.bin"
         ref_file = "outputs/test_basic_main/reference0.bin"
         args = ["inputs/simple0/bin/m0.bin", "inputs/simple0/bin/m1.bin",
                 "inputs/simple0/bin/inputs/input0.bin", out_file]
+        if extra_arg:
+            args.append("loremipsum")
         # call classify function
         t.call("classify")
         # generate assembly and pass program arguments directly to venus
-        t.execute(args=args)
+        t.execute(args=args, fail=fail, code=code)
 
-        # compare the output file and
-        raise NotImplementedError("TODO")
-        # TODO
-        # compare the classification output with `check_stdout`
+        if code == 0:
+            # compare the output file and reference file
+            t.check_file_output(out_file, ref_file)
+
+            # compare the classification output with `check_stdout`
+            t.check_stdout("2")
+
+    def test_simple0_input0(self):
+        self.base_test()
+
+    def test_error(self):
+        self.base_test(fail="malloc", code=48)
+        self.base_test(extra_arg=True, code=35)
 
     @classmethod
     def tearDownClass(cls):
@@ -401,6 +412,8 @@ def compare_files(test, actual, expected):
         expected_bin = e.read()
     test.assertEqual(actual_bin, expected_bin, f"Bytes of {actual} and {expected} did not match!")
 
+import utils
+
 class TestMain(TestCase):
     """ This sanity check executes src/main.S using venus and verifies the stdout and the file that is generated.
     """
@@ -417,8 +430,46 @@ class TestMain(TestCase):
         t.check_stdout(label)
         t.check_file_output(args[-1], reference)
 
+    def run_test(self, inputs, output_id):
+        args = [f"{inputs}/m0.bin", f"{inputs}/m1.bin",
+                f"{inputs}/inputs/input0.bin",
+                f"outputs/test_basic_main/student{output_id}.bin"]
+        reference = f"outputs/test_basic_main/reference{output_id}.bin"
+
+        from random import randint
+        n, m, a, b = (randint(1, 10) for _ in range(4))
+        m1 = utils.randmat(n, a)
+        m0 = utils.randmat(a, b)
+        inp = utils.randmat(b, m)
+
+        score = m0.dot(inp)
+        utils.relu(score)
+        score = m1.dot(score)
+
+        utils.write_matrix(args[0], m0)
+        utils.write_matrix(args[1], m1)
+        utils.write_matrix(args[2], inp)
+        utils.write_matrix(reference, score)
+        score.shape = n*m
+        label = str(max(range(n*m), key=lambda x:score[x]))
+
+        t= AssemblyTest(self, "main.s", no_utils=True)
+        t.call("main")
+        t.execute(args=args)
+        t.check_stdout(label)
+        t.check_file_output(args[-1], reference)
+
     def test0(self):
         self.run_main("inputs/simple0/bin", "0", "2")
 
     def test1(self):
         self.run_main("inputs/simple1/bin", "1", "1")
+
+    def test2(self):
+        self.run_test("inputs/custom0/bin", "2")
+
+    def test3(self):
+        self.run_test("inputs/custom1/bin", "3")
+
+    def test4(self):
+        self.run_test("inputs/custom2/bin", "4")

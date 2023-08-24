@@ -105,10 +105,19 @@ classify:
     
     # s6: Current layer (1, 2)
     # s7: Final layer (3)
-    li a0 65536
+    # Shape of s6: *0(s2), *4(s5)
+    # Shape of s7: *0(s3), *4(s5)
+    lw t0 0(s2)
+    lw t1 4(s5)
+    mul a0 t0 t1
+    slli a0 a0 2
     jal ra malloc
     mv s6 a0
-    li a0 65536
+
+    lw t0 0(s3)
+    lw t1 4(s5)
+    mul a0 t0 t1
+    slli a0 a0 2
     jal ra malloc
     mv s7 a0
 
