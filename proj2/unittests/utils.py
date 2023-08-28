@@ -26,7 +26,7 @@ def read_matrix(file_name):
         content = content[8:]
         mat = []
         for i in range(row * col):
-            mat.append(read_int(content[i * 4:i * 4 + 1]))
+            mat.append(read_int(content[i * 4:(i+1) * 4]))
         mat = matrix(mat).reshape(row, col)
     return mat
 
