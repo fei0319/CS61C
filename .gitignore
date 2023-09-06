@@ -1,7 +1,5 @@
 .idea/
 
-*.out
-
 *.exe
 *.o
 .DS_Store
