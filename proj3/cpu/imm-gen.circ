@@ -179,7 +179,7 @@
       <a name="width" val="32"/>
     </comp>
     <comp lib="3" loc="(390,490)" name="Shifter">
-      <a name="shift" val="lr"/>
+      <a name="shift" val="ar"/>
       <a name="width" val="32"/>
     </comp>
     <comp lib="5" loc="(146,92)" name="Text">
