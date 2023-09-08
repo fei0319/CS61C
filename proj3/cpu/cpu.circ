@@ -225,6 +225,10 @@
       <a name="label" val="WBSel"/>
       <a name="width" val="2"/>
     </comp>
+    <comp lib="0" loc="(1290,1250)" name="Tunnel">
+      <a name="facing" val="south"/>
+      <a name="label" val="CSRSel"/>
+    </comp>
     <comp lib="0" loc="(1320,190)" name="Pin">
       <a name="facing" val="south"/>
       <a name="label" val="s0"/>
@@ -246,6 +250,10 @@
       <a name="facing" val="east"/>
       <a name="label" val="Imm"/>
       <a name="width" val="32"/>
+    </comp>
+    <comp lib="0" loc="(1340,1290)" name="Tunnel">
+      <a name="facing" val="south"/>
+      <a name="label" val="CSRWen"/>
     </comp>
     <comp lib="0" loc="(1360,770)" name="Tunnel">
       <a name="facing" val="east"/>
@@ -438,6 +446,11 @@
       <a name="facing" val="east"/>
       <a name="label" val="clk"/>
     </comp>
+    <comp lib="0" loc="(360,1540)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="Imm"/>
+      <a name="width" val="32"/>
+    </comp>
     <comp lib="0" loc="(370,740)" name="Constant">
       <a name="facing" val="north"/>
       <a name="value" val="0x0"/>
@@ -461,9 +474,31 @@
       <a name="facing" val="east"/>
       <a name="label" val="RegWEn"/>
     </comp>
+    <comp lib="0" loc="(380,1570)" name="Constant">
+      <a name="value" val="0x0"/>
+      <a name="width" val="2"/>
+    </comp>
+    <comp lib="0" loc="(400,1600)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="CSRSrc"/>
+      <a name="width" val="32"/>
+    </comp>
+    <comp lib="0" loc="(400,1630)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="CSRWen"/>
+    </comp>
     <comp lib="0" loc="(400,970)" name="Tunnel">
       <a name="facing" val="north"/>
       <a name="label" val="clk"/>
+    </comp>
+    <comp lib="0" loc="(440,1610)" name="Tunnel">
+      <a name="facing" val="north"/>
+      <a name="label" val="clk"/>
+    </comp>
+    <comp lib="0" loc="(440,660)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="rs1"/>
+      <a name="width" val="32"/>
     </comp>
     <comp lib="0" loc="(460,1410)" name="Tunnel">
       <a name="label" val="Imm"/>
@@ -473,9 +508,22 @@
       <a name="label" val="PROGRAM_COUNTER"/>
       <a name="width" val="32"/>
     </comp>
+    <comp lib="0" loc="(460,720)" name="Bit Extender">
+      <a name="in_width" val="5"/>
+      <a name="out_width" val="32"/>
+      <a name="type" val="zero"/>
+    </comp>
+    <comp lib="0" loc="(490,750)" name="Tunnel">
+      <a name="facing" val="north"/>
+      <a name="label" val="CSRSel"/>
+    </comp>
     <comp lib="0" loc="(520,200)" name="Pin">
       <a name="label" val="INSTRUCTION"/>
       <a name="locked" val="true"/>
+      <a name="width" val="32"/>
+    </comp>
+    <comp lib="0" loc="(520,710)" name="Tunnel">
+      <a name="label" val="CSRSrc"/>
       <a name="width" val="32"/>
     </comp>
     <comp lib="0" loc="(600,200)" name="Tunnel">
@@ -641,6 +689,14 @@
       <a name="group" val="5"/>
       <a name="width" val="32"/>
     </comp>
+    <comp lib="2" loc="(400,1540)" name="BitSelector">
+      <a name="group" val="12"/>
+      <a name="width" val="32"/>
+    </comp>
+    <comp lib="2" loc="(510,710)" name="Multiplexer">
+      <a name="enable" val="false"/>
+      <a name="width" val="32"/>
+    </comp>
     <comp lib="3" loc="(250,460)" name="Adder">
       <a name="width" val="32"/>
     </comp>
@@ -715,9 +771,11 @@
     <wire from="(1230,190)" to="(1230,220)"/>
     <wire from="(1240,1290)" to="(1240,1310)"/>
     <wire from="(1250,210)" to="(1300,210)"/>
+    <wire from="(1290,1250)" to="(1290,1310)"/>
     <wire from="(1320,190)" to="(1320,220)"/>
     <wire from="(1320,790)" to="(1370,790)"/>
     <wire from="(1320,910)" to="(1370,910)"/>
+    <wire from="(1340,1290)" to="(1340,1310)"/>
     <wire from="(1340,210)" to="(1390,210)"/>
     <wire from="(1360,770)" to="(1370,770)"/>
     <wire from="(1360,890)" to="(1370,890)"/>
@@ -785,11 +843,13 @@
     <wire from="(340,480)" to="(340,530)"/>
     <wire from="(340,530)" to="(350,530)"/>
     <wire from="(340,570)" to="(350,570)"/>
+    <wire from="(360,1540)" to="(370,1540)"/>
     <wire from="(370,730)" to="(370,740)"/>
     <wire from="(370,790)" to="(370,800)"/>
     <wire from="(370,850)" to="(370,860)"/>
     <wire from="(370,930)" to="(380,930)"/>
     <wire from="(370,960)" to="(390,960)"/>
+    <wire from="(380,1570)" to="(390,1570)"/>
     <wire from="(380,240)" to="(380,260)"/>
     <wire from="(380,260)" to="(590,260)"/>
     <wire from="(380,720)" to="(410,720)"/>
@@ -797,16 +857,33 @@
     <wire from="(380,840)" to="(410,840)"/>
     <wire from="(380,860)" to="(380,930)"/>
     <wire from="(380,860)" to="(410,860)"/>
+    <wire from="(390,1550)" to="(390,1570)"/>
     <wire from="(390,780)" to="(390,820)"/>
     <wire from="(390,820)" to="(410,820)"/>
     <wire from="(390,880)" to="(390,960)"/>
     <wire from="(390,880)" to="(410,880)"/>
+    <wire from="(400,1540)" to="(460,1540)"/>
+    <wire from="(400,1600)" to="(410,1600)"/>
+    <wire from="(400,1630)" to="(420,1630)"/>
     <wire from="(400,900)" to="(400,970)"/>
     <wire from="(400,900)" to="(410,900)"/>
+    <wire from="(410,1560)" to="(410,1600)"/>
+    <wire from="(410,1560)" to="(460,1560)"/>
     <wire from="(410,530)" to="(440,530)"/>
     <wire from="(410,720)" to="(410,800)"/>
+    <wire from="(410,720)" to="(420,720)"/>
+    <wire from="(420,1580)" to="(420,1630)"/>
+    <wire from="(420,1580)" to="(460,1580)"/>
+    <wire from="(440,1600)" to="(440,1610)"/>
+    <wire from="(440,1600)" to="(460,1600)"/>
     <wire from="(440,430)" to="(440,530)"/>
     <wire from="(440,530)" to="(460,530)"/>
+    <wire from="(440,660)" to="(470,660)"/>
+    <wire from="(460,720)" to="(480,720)"/>
+    <wire from="(470,660)" to="(470,700)"/>
+    <wire from="(470,700)" to="(480,700)"/>
+    <wire from="(490,730)" to="(490,750)"/>
+    <wire from="(510,710)" to="(520,710)"/>
     <wire from="(520,200)" to="(600,200)"/>
     <wire from="(590,220)" to="(590,260)"/>
     <wire from="(590,70)" to="(590,180)"/>
