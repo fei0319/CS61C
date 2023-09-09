@@ -412,6 +412,15 @@
       <a name="facing" val="east"/>
       <a name="label" val="BrLt"/>
     </comp>
+    <comp lib="0" loc="(190,1710)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="opcode"/>
+      <a name="width" val="7"/>
+    </comp>
+    <comp lib="0" loc="(190,1750)" name="Constant">
+      <a name="value" val="0x73"/>
+      <a name="width" val="7"/>
+    </comp>
     <comp lib="0" loc="(200,210)" name="Pin">
       <a name="facing" val="south"/>
       <a name="label" val="BrEq"/>
@@ -420,9 +429,18 @@
       <a name="facing" val="north"/>
       <a name="label" val="BrEq"/>
     </comp>
+    <comp lib="0" loc="(220,1660)" name="Constant">
+      <a name="value" val="0x5"/>
+      <a name="width" val="3"/>
+    </comp>
     <comp lib="0" loc="(220,630)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="BrEq"/>
+    </comp>
+    <comp lib="0" loc="(230,1620)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="funct3"/>
+      <a name="width" val="3"/>
     </comp>
     <comp lib="0" loc="(240,520)" name="Tunnel">
       <a name="facing" val="east"/>
@@ -452,6 +470,9 @@
       <a name="label" val="opcode"/>
       <a name="width" val="7"/>
     </comp>
+    <comp lib="0" loc="(280,1720)" name="Tunnel">
+      <a name="label" val="CSRWen"/>
+    </comp>
     <comp lib="0" loc="(290,1230)" name="Tunnel">
       <a name="facing" val="east"/>
       <a name="label" val="ALUSel_R"/>
@@ -471,6 +492,9 @@
       <a name="facing" val="east"/>
       <a name="label" val="ALUSel_UJ"/>
       <a name="width" val="4"/>
+    </comp>
+    <comp lib="0" loc="(290,1630)" name="Tunnel">
+      <a name="label" val="CSRSel"/>
     </comp>
     <comp lib="0" loc="(290,690)" name="Tunnel">
       <a name="facing" val="east"/>
@@ -879,6 +903,14 @@
     <comp lib="3" loc="(1460,1400)" name="Comparator">
       <a name="width" val="7"/>
     </comp>
+    <comp lib="3" loc="(250,1720)" name="Comparator">
+      <a name="mode" val="unsigned"/>
+      <a name="width" val="7"/>
+    </comp>
+    <comp lib="3" loc="(280,1630)" name="Comparator">
+      <a name="mode" val="unsigned"/>
+      <a name="width" val="3"/>
+    </comp>
     <comp lib="3" loc="(330,1100)" name="Comparator">
       <a name="mode" val="unsigned"/>
       <a name="width" val="7"/>
@@ -1043,11 +1075,18 @@
     <wire from="(180,570)" to="(180,590)"/>
     <wire from="(180,570)" to="(280,570)"/>
     <wire from="(180,590)" to="(190,590)"/>
+    <wire from="(190,1710)" to="(210,1710)"/>
+    <wire from="(190,1730)" to="(190,1750)"/>
+    <wire from="(190,1730)" to="(210,1730)"/>
     <wire from="(200,210)" to="(200,230)"/>
+    <wire from="(220,1640)" to="(220,1660)"/>
+    <wire from="(220,1640)" to="(240,1640)"/>
     <wire from="(220,230)" to="(230,230)"/>
     <wire from="(220,590)" to="(230,590)"/>
     <wire from="(220,630)" to="(230,630)"/>
+    <wire from="(230,1620)" to="(240,1620)"/>
     <wire from="(240,520)" to="(250,520)"/>
+    <wire from="(250,1720)" to="(280,1720)"/>
     <wire from="(250,210)" to="(250,230)"/>
     <wire from="(250,520)" to="(250,530)"/>
     <wire from="(250,520)" to="(300,520)"/>
@@ -1058,6 +1097,7 @@
     <wire from="(270,230)" to="(280,230)"/>
     <wire from="(280,100)" to="(280,230)"/>
     <wire from="(280,1090)" to="(290,1090)"/>
+    <wire from="(280,1630)" to="(290,1630)"/>
     <wire from="(280,560)" to="(280,570)"/>
     <wire from="(280,560)" to="(300,560)"/>
     <wire from="(280,570)" to="(280,580)"/>
