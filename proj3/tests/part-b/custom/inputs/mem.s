@@ -10,7 +10,7 @@ mul t0 t0 t0
 sw t0 4(s0)
 
 lw t0 0(s0)
-lw t0 0(s0)
+lw t0 4(s0)
 
 lb t0 0(s0)
 lb t0 1(s0)
@@ -33,10 +33,11 @@ add t0 t0 t1
 
 sb t0 0(s0)
 sh t0 1(s0)
+mul t0 t0 t0
 sb t0 3(s0)
 
 lw t0 0(s0)
-lw t0 0(s0)
+lw t0 4(s0)
 
 lb t0 0(s0)
 lb t0 1(s0)
