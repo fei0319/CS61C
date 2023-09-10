@@ -590,11 +590,11 @@
     </comp>
     <comp lib="0" loc="(330,1030)" name="Tunnel">
       <a name="facing" val="east"/>
-      <a name="label" val="SB_f"/>
+      <a name="label" val="UJ_f"/>
     </comp>
     <comp lib="0" loc="(330,1060)" name="Tunnel">
       <a name="facing" val="east"/>
-      <a name="label" val="UJ_f"/>
+      <a name="label" val="SB_f"/>
     </comp>
     <comp lib="0" loc="(340,1560)" name="Tunnel">
       <a name="label" val="WBSel"/>
@@ -671,7 +671,7 @@
     <comp lib="0" loc="(420,880)" name="Tunnel">
       <a name="label" val="BrUn"/>
     </comp>
-    <comp lib="0" loc="(450,1310)" name="Tunnel">
+    <comp lib="0" loc="(460,1310)" name="Tunnel">
       <a name="label" val="ALUSel"/>
       <a name="width" val="4"/>
     </comp>
@@ -726,6 +726,16 @@
       <a name="facing" val="north"/>
       <a name="label" val="ALUSel"/>
       <a name="width" val="4"/>
+    </comp>
+    <comp lib="0" loc="(760,760)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="opcode"/>
+      <a name="width" val="7"/>
+    </comp>
+    <comp lib="0" loc="(760,790)" name="Constant">
+      <a name="facing" val="north"/>
+      <a name="value" val="0x67"/>
+      <a name="width" val="7"/>
     </comp>
     <comp lib="0" loc="(800,1450)" name="Tunnel">
       <a name="facing" val="east"/>
@@ -880,7 +890,9 @@
       <a name="label" val="SB_f"/>
     </comp>
     <comp lib="1" loc="(1010,1090)" name="OR Gate"/>
-    <comp lib="1" loc="(1010,770)" name="OR Gate"/>
+    <comp lib="1" loc="(1010,770)" name="OR Gate">
+      <a name="inputs" val="3"/>
+    </comp>
     <comp lib="1" loc="(1230,1550)" name="AND Gate"/>
     <comp lib="1" loc="(220,590)" name="NOT Gate"/>
     <comp lib="1" loc="(280,610)" name="OR Gate"/>
@@ -1032,6 +1044,10 @@
     <comp lib="3" loc="(410,890)" name="Comparator">
       <a name="mode" val="unsigned"/>
       <a name="width" val="3"/>
+    </comp>
+    <comp lib="3" loc="(810,770)" name="Comparator">
+      <a name="mode" val="unsigned"/>
+      <a name="width" val="7"/>
     </comp>
     <comp lib="3" loc="(860,1460)" name="Comparator">
       <a name="mode" val="unsigned"/>
@@ -1307,7 +1323,7 @@
     <wire from="(420,210)" to="(420,230)"/>
     <wire from="(430,460)" to="(430,490)"/>
     <wire from="(430,530)" to="(430,550)"/>
-    <wire from="(440,1310)" to="(450,1310)"/>
+    <wire from="(440,1310)" to="(460,1310)"/>
     <wire from="(440,230)" to="(480,230)"/>
     <wire from="(480,510)" to="(490,510)"/>
     <wire from="(500,210)" to="(500,230)"/>
@@ -1323,10 +1339,14 @@
     <wire from="(70,230)" to="(110,230)"/>
     <wire from="(730,210)" to="(730,230)"/>
     <wire from="(750,230)" to="(790,230)"/>
+    <wire from="(760,760)" to="(770,760)"/>
+    <wire from="(760,780)" to="(760,790)"/>
+    <wire from="(760,780)" to="(770,780)"/>
     <wire from="(800,1450)" to="(820,1450)"/>
     <wire from="(810,1470)" to="(810,1490)"/>
     <wire from="(810,1470)" to="(820,1470)"/>
     <wire from="(810,210)" to="(810,230)"/>
+    <wire from="(810,770)" to="(960,770)"/>
     <wire from="(830,230)" to="(860,230)"/>
     <wire from="(860,1420)" to="(880,1420)"/>
     <wire from="(860,1460)" to="(880,1460)"/>
