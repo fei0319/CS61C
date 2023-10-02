@@ -14,6 +14,7 @@ int allocate_matrix(matrix **mat, int rows, int cols);
 int allocate_matrix_ref(matrix **mat, matrix *from, int offset, int rows, int cols);
 void deallocate_matrix(matrix *mat);
 void reallocate_matrix(matrix *mat, int rows, int cols);
+void reallocate_matrix_with(matrix *mat, int rows, int cols, double *data);
 double get(matrix *mat, int row, int col);
 void set(matrix *mat, int row, int col, double val);
 void fill_matrix(matrix *mat, double val);

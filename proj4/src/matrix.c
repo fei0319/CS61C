@@ -1,6 +1,7 @@
 #include "matrix.h"
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <omp.h>
 
@@ -70,7 +71,7 @@ int allocate_matrix(matrix **mat, int rows, int cols) {
     if ((*mat)->data == NULL) {
         return -2;
     }
-    memset((*mat)->data, 0, sizeof((*mat)->data));
+    memset((*mat)->data, 0, rows * cols * sizeof(double);
 
     return 0;
 }
@@ -96,8 +97,13 @@ int allocate_matrix_ref(matrix **mat, matrix *from, int offset, int rows, int co
     (*mat)->rows = rows;
     (*mat)->cols = cols;
     (*mat)->data = from->data + offset;
-    (*from)->ref_cnt += 1;
+    (*mat)->ref_cnt = 1;
     (*mat)->parent = from;
+
+    while (from != NULL) {
+        from->ref_cnt += 1;
+        from = from->parent;
+    }
 
     return 0;
 }
@@ -128,6 +134,14 @@ void reallocate_matrix(matrix *mat, int rows, int cols) {
     mat->data = malloc(rows * cols * sizeof(double));
     mat->ref_cnt = 1;
     mat->parent = NULL;
+}
+
+/*
+ * Deallocates the specified matrix and sets its data.
+ */
+void reallocate_matrix_with(matrix *mat, int rows, int cols, double *data) {
+    reallocate_matrix(mat, rows, cols);
+    mat->data = data;
 }
 
 /*
@@ -164,12 +178,12 @@ int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     if (mat2->rows != rows || mat2->cols != cols) {
         return -100;
     }
-
-    reallocate_matrix(result, rows, cols);
+    double *data = malloc(ros * cols * sizeof(data));
 
     for (int i = row * col - 1; i >= 0; --i) {
-        result->data[i] = mat1->data[i] + mat2->data[i];
+        data[i] = mat1->data[i] + mat2->data[i];
     }
+    reallocate_matrix_with(result, ros, cols, data);
     return 0;
 }
 
@@ -193,17 +207,17 @@ int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
         return -101;
     }
     int rows = mat1->rows, mids = mat1.cols, cols = mat2.cols;
-
-    reallocate_matrix(result, rows, cols);
+    double *data = malloc(n * n * sizeof(double));
 
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
             double t = 0;
             for (int k = 0; k < mids; ++k)
                 t += get(mat1, i, k) * get(mat2, k, j);
-            set(result, i, j, t);
+            data[i * rows + j] = t;
         }
     }
+    reallocate_matrix_with(result, rows, cols, data);
     return 0;
 }
 
@@ -218,19 +232,21 @@ int pow_matrix(matrix *result, matrix *mat, int pow) {
     }
     int n = mat->rows;
 
-    reallocate_matrix(result, n, n);
-
-    matrix *p;
+    matrix *p, *temp_result;
     allocate_matrix_ref(&p, mat, 0, n, n);
-    for (int i = 0; i < n; ++i) {
-        set(result, i, i, 1);
-    }
+    allocate_matrix(&temp_result, rows, cols);
+
     while (pow) {
         if (pow & 1) {
-            mul_matrix(result, result, p);
+            mul_matrix(temp_result, temp_result, p);
         }
         pow >>= 1, mul_matrix(p, p, p);
     }
+
+    reallocate_matrix_with(result, n, n, temp_result.data);
+    deallocate_matrix(p);
+    free(temp_result);
+    free(p);
     return 0;
 }
 
@@ -250,11 +266,12 @@ int neg_matrix(matrix *result, matrix *mat) {
  */
 int abs_matrix(matrix *result, matrix *mat) {
     int rows = mat->rows, cols = mat->cols;
-    reallocate_matrix(result, rows, cols);
+    double *data = malloc(rows * cols * sizeof(double));
 
-    for (int i = row * col - 1; i >= 0; --i) {
-        double t = mat->data[i];
-        result->data[i] = t > 0 ? t : -t;
+    for (int i = rows * cols - 1; i >= 0; --i) {
+        data[i] = mat->data[i] >= 0 ? mat->data[i] : -mat->data[i];
     }
+
+    reallocate_matrix_with(result, rows, cols, data);
     return 0;
 }
