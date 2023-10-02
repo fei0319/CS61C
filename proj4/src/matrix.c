@@ -53,7 +53,26 @@ void rand_matrix(matrix *result, unsigned int seed, double low, double high) {
  * Return 0 upon success.
  */
 int allocate_matrix(matrix **mat, int rows, int cols) {
-    /* TODO: YOUR CODE HERE */
+    if (rows <= 0 || cols <= 0) {
+        return -1;
+    }
+
+    *mat = malloc(sizeof(matrix));
+    if (*mat == NULL) {
+        return -2;
+    }
+    (*mat)->rows = rows;
+    (*mat)->cols = cols;
+    (*mat)->data = malloc(rows * cols * sizeof(double));
+    (*mat)->ref_cnt = 1;
+    (*mat)->parent = NULL;
+
+    if ((*mat)->data == NULL) {
+        return -2;
+    }
+    memset((*mat)->data, 0, sizeof((*mat)->data));
+
+    return 0;
 }
 
 /*
@@ -66,7 +85,21 @@ int allocate_matrix(matrix **mat, int rows, int cols) {
  * Return 0 upon success.
  */
 int allocate_matrix_ref(matrix **mat, matrix *from, int offset, int rows, int cols) {
-    /* TODO: YOUR CODE HERE */
+    if (rows <= 0 || cols <= 0) {
+        return -1;
+    }
+
+    *mat = malloc(sizeof(matrix));
+    if (*mat == NULL) {
+        return -2;
+    }
+    (*mat)->rows = rows;
+    (*mat)->cols = cols;
+    (*mat)->data = from->data + offset;
+    (*from)->ref_cnt += 1;
+    (*mat)->parent = from;
+
+    return 0;
 }
 
 /*
@@ -75,7 +108,26 @@ int allocate_matrix_ref(matrix **mat, matrix *from, int offset, int rows, int co
  * (including itself). You cannot assume that mat is not NULL.
  */
 void deallocate_matrix(matrix *mat) {
-    /* TODO: YOUR CODE HERE */
+    mat->ref_cnt -= 1;
+    if (mat->parent == NULL && mat->ref_cnt == 0) {
+        free(mat->data);
+    }
+    if (mat->parent != NULL) {
+        deallocate_matrix(mat->parent);
+    }
+}
+
+/*
+ * This function will call `deallocate_matrix` on the specified matrix and reallocate memory to its `data`
+ * as well as reset its other members.
+ */
+void reallocate_matrix(matrix *mat, int rows, int cols) {
+    deallocate_matrix(mat);
+    mat->rows = rows;
+    mat->cols = cols;
+    mat->data = malloc(rows * cols * sizeof(double));
+    mat->ref_cnt = 1;
+    mat->parent = NULL;
 }
 
 /*
@@ -83,7 +135,7 @@ void deallocate_matrix(matrix *mat) {
  * You may assume `row` and `col` are valid.
  */
 double get(matrix *mat, int row, int col) {
-    /* TODO: YOUR CODE HERE */
+    return mat->data[mat->cols * row + col];
 }
 
 /*
@@ -91,14 +143,16 @@ double get(matrix *mat, int row, int col) {
  * `col` are valid
  */
 void set(matrix *mat, int row, int col, double val) {
-    /* TODO: YOUR CODE HERE */
+    mat->data[mat->cols * row + col] = val;
 }
 
 /*
  * Sets all entries in mat to val
  */
 void fill_matrix(matrix *mat, double val) {
-    /* TODO: YOUR CODE HERE */
+    for (int i = mat->row * mat->col - 1; i >= 0; --i) {
+        mat->data[i] = val;
+    }
 }
 
 /*
@@ -106,7 +160,17 @@ void fill_matrix(matrix *mat, double val) {
  * Return 0 upon success and a nonzero value upon failure.
  */
 int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
-    /* TODO: YOUR CODE HERE */
+    int rows = mat1->rows, cols = mat2->cols;
+    if (mat2->rows != rows || mat2->cols != cols) {
+        return -100;
+    }
+
+    reallocate_matrix(result, rows, cols);
+
+    for (int i = row * col - 1; i >= 0; --i) {
+        result->data[i] = mat1->data[i] + mat2->data[i];
+    }
+    return 0;
 }
 
 /*
@@ -125,7 +189,22 @@ int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  * Remember that matrix multiplication is not the same as multiplying individual elements.
  */
 int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
-    /* TODO: YOUR CODE HERE */
+    if (mat1.cols != mat2.rows) {
+        return -101;
+    }
+    int rows = mat1->rows, mids = mat1.cols, cols = mat2.cols;
+
+    reallocate_matrix(result, rows, cols);
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            double t = 0;
+            for (int k = 0; k < mids; ++k)
+                t += get(mat1, i, k) * get(mat2, k, j);
+            set(result, i, j, t);
+        }
+    }
+    return 0;
 }
 
 /*
@@ -134,7 +213,25 @@ int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  * Remember that pow is defined with matrix multiplication, not element-wise multiplication.
  */
 int pow_matrix(matrix *result, matrix *mat, int pow) {
-    /* TODO: YOUR CODE HERE */
+    if (mat->rows != mat.cols) {
+        return -102;
+    }
+    int n = mat->rows;
+
+    reallocate_matrix(result, n, n);
+
+    matrix *p;
+    allocate_matrix_ref(&p, mat, 0, n, n);
+    for (int i = 0; i < n; ++i) {
+        set(result, i, i, 1);
+    }
+    while (pow) {
+        if (pow & 1) {
+            mul_matrix(result, result, p);
+        }
+        pow >>= 1, mul_matrix(p, p, p);
+    }
+    return 0;
 }
 
 /*
@@ -152,5 +249,12 @@ int neg_matrix(matrix *result, matrix *mat) {
  * Return 0 upon success and a nonzero value upon failure.
  */
 int abs_matrix(matrix *result, matrix *mat) {
-    /* TODO: YOUR CODE HERE */
+    int rows = mat->rows, cols = mat->cols;
+    reallocate_matrix(result, rows, cols);
+
+    for (int i = row * col - 1; i >= 0; --i) {
+        double t = mat->data[i];
+        result->data[i] = t > 0 ? t : -t;
+    }
+    return 0;
 }
