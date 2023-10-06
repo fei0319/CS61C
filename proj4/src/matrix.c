@@ -71,7 +71,7 @@ int allocate_matrix(matrix **mat, int rows, int cols) {
     if ((*mat)->data == NULL) {
         return -2;
     }
-    memset((*mat)->data, 0, rows * cols * sizeof(double);
+    memset((*mat)->data, 0, rows * cols * sizeof(double));
 
     return 0;
 }
@@ -114,6 +114,9 @@ int allocate_matrix_ref(matrix **mat, matrix *from, int offset, int rows, int co
  * (including itself). You cannot assume that mat is not NULL.
  */
 void deallocate_matrix(matrix *mat) {
+    if (mat == NULL) {
+        return;
+    }
     mat->ref_cnt -= 1;
     if (mat->parent == NULL && mat->ref_cnt == 0) {
         free(mat->data);
@@ -164,7 +167,7 @@ void set(matrix *mat, int row, int col, double val) {
  * Sets all entries in mat to val
  */
 void fill_matrix(matrix *mat, double val) {
-    for (int i = mat->row * mat->col - 1; i >= 0; --i) {
+    for (int i = mat->rows * mat->cols - 1; i >= 0; --i) {
         mat->data[i] = val;
     }
 }
@@ -178,12 +181,12 @@ int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     if (mat2->rows != rows || mat2->cols != cols) {
         return -100;
     }
-    double *data = malloc(ros * cols * sizeof(data));
+    double *data = malloc(rows * cols * sizeof(data));
 
-    for (int i = row * col - 1; i >= 0; --i) {
+    for (int i = rows * cols - 1; i >= 0; --i) {
         data[i] = mat1->data[i] + mat2->data[i];
     }
-    reallocate_matrix_with(result, ros, cols, data);
+    reallocate_matrix_with(result, rows, cols, data);
     return 0;
 }
 
@@ -203,11 +206,11 @@ int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  * Remember that matrix multiplication is not the same as multiplying individual elements.
  */
 int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
-    if (mat1.cols != mat2.rows) {
+    if (mat1->cols != mat2->rows) {
         return -101;
     }
-    int rows = mat1->rows, mids = mat1.cols, cols = mat2.cols;
-    double *data = malloc(n * n * sizeof(double));
+    int rows = mat1->rows, mids = mat1->cols, cols = mat2->cols;
+    double *data = malloc(rows * cols * sizeof(double));
 
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
@@ -227,14 +230,17 @@ int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  * Remember that pow is defined with matrix multiplication, not element-wise multiplication.
  */
 int pow_matrix(matrix *result, matrix *mat, int pow) {
-    if (mat->rows != mat.cols) {
+    if (mat->rows != mat->cols) {
         return -102;
     }
     int n = mat->rows;
 
     matrix *p, *temp_result;
     allocate_matrix_ref(&p, mat, 0, n, n);
-    allocate_matrix(&temp_result, rows, cols);
+    allocate_matrix(&temp_result, n, n);
+    for (int i = 0; i < n; ++i) {
+        set(temp_result, i, i, 1);
+    }
 
     while (pow) {
         if (pow & 1) {
@@ -243,7 +249,7 @@ int pow_matrix(matrix *result, matrix *mat, int pow) {
         pow >>= 1, mul_matrix(p, p, p);
     }
 
-    reallocate_matrix_with(result, n, n, temp_result.data);
+    reallocate_matrix_with(result, n, n, temp_result->data);
     deallocate_matrix(p);
     free(temp_result);
     free(p);
