@@ -447,7 +447,20 @@ static PyNumberMethods Matrix61c_as_number = {
  * This function should return None in Python.
  */
 static PyObject *Matrix61c_set_value(Matrix61c *self, PyObject* args) {
-    /* TODO: YOUR CODE HERE */
+    PyObject *arg1, *arg2, *arg3;
+    PyArg_UnpackTuple(args, "args", 3, 3, &arg1, &arg2, &arg3);
+
+    int row = PyLong_AsLong(arg1), col = PyLong_AsLong(arg2);
+    double val = 0;
+
+    if (PyFloat_Check(arg3)) {
+        val = PyFloat_AsDouble(arg3);
+    } else {
+        val = PyLong_AsDouble(arg3);
+    }
+
+    set(self->mat, row, col, val);
+    return Py_None;
 }
 
 /*
@@ -456,7 +469,12 @@ static PyObject *Matrix61c_set_value(Matrix61c *self, PyObject* args) {
  * float.
  */
 static PyObject *Matrix61c_get_value(Matrix61c *self, PyObject* args) {
-    /* TODO: YOUR CODE HERE */
+    PyObject *arg1, *arg2;
+    PyArg_UnpackTuple(args, "args", 2, 2, &arg1, &arg2);
+
+    int row = PyLong_AsLong(arg1), col = PyLong_AsLong(arg2);
+
+    return PyFloat_FromDouble(get(self->mat, row, col));
 }
 
 /*
@@ -466,8 +484,9 @@ static PyObject *Matrix61c_get_value(Matrix61c *self, PyObject* args) {
  * You might find this link helpful: https://docs.python.org/3.6/c-api/structures.html
  */
 static PyMethodDef Matrix61c_methods[] = {
-    /* TODO: YOUR CODE HERE */
-    {NULL, NULL, 0, NULL}
+        {"set", (PyCFunction)Matrix61c_set_value, METH_VARARGS, "Set a value for the matrix"},
+        {"get", (PyCFunction)Matrix61c_get_value, METH_VARARGS, "Get a value from the matrix"},
+        {NULL, NULL, 0, NULL}
 };
 
 /* INSTANCE ATTRIBUTES*/
