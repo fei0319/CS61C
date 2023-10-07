@@ -311,7 +311,26 @@ static PyMappingMethods Matrix61c_mapping = {
  * self, and the second operand can be obtained by casting `args`.
  */
 static PyObject *Matrix61c_add(Matrix61c* self, PyObject* args) {
-    /* TODO: YOUR CODE HERE */
+    if (Py_TYPE(self) != &Matrix61cType || Py_TYPE(args) != &Matrix61cType) {
+        PyErr_SetString(PyExc_TypeError, "unsupported operand type(s) for +");
+        return NULL;
+    }
+
+    int rows = self->mat->rows, cols = self->mat->cols;
+    matrix *mat;
+    allocate_matrix(&mat, rows, cols);
+    int failed = add_matrix(mat, self->mat, ((Matrix61c *)args)->mat);
+    if (failed) {
+        deallocate_matrix(mat);
+        free(mat);
+        PyErr_SetString(PyExc_ValueError, "matrices of different shapes added");
+        return NULL;
+    }
+
+    PyObject *result = Matrix61c_new(&Matrix61cType, NULL, NULL);
+    ((Matrix61c *)result)->mat = mat;
+    ((Matrix61c *)result)->shape = PyTuple_Pack(2, PyLong_FromLong(rows), PyLong_FromLong(cols));
+    return result;
 }
 
 /*
@@ -328,7 +347,26 @@ static PyObject *Matrix61c_sub(Matrix61c* self, PyObject* args) {
  * can be obtained by casting `args`.
  */
 static PyObject *Matrix61c_multiply(Matrix61c* self, PyObject *args) {
-    /* TODO: YOUR CODE HERE */
+    if (Py_TYPE(self) != &Matrix61cType || Py_TYPE(args) != &Matrix61cType) {
+        PyErr_SetString(PyExc_TypeError, "unsupported operand type(s) for +");
+        return NULL;
+    }
+
+    int rows = self->mat->rows, cols = ((Matrix61c *)args)->mat->cols;
+    matrix *mat;
+    allocate_matrix(&mat, rows, cols);
+    int failed = mul_matrix(mat, self->mat, ((Matrix61c *)args)->mat);
+    if (failed) {
+        deallocate_matrix(mat);
+        free(mat);
+        PyErr_SetString(PyExc_ValueError, "matrices of unmatched shape multiplied");
+        return NULL;
+    }
+
+    PyObject *result = Matrix61c_new(&Matrix61cType, NULL, NULL);
+    ((Matrix61c *)result)->mat = mat;
+    ((Matrix61c *)result)->shape = PyTuple_Pack(2, PyLong_FromLong(rows), PyLong_FromLong(cols));
+    return result;
 }
 
 /*
@@ -343,14 +381,52 @@ static PyObject *Matrix61c_neg(Matrix61c* self) {
  * Take the element-wise absolute value of this numc.Matrix.
  */
 static PyObject *Matrix61c_abs(Matrix61c *self) {
-    /* TODO: YOUR CODE HERE */
+    if (Py_TYPE(self) != &Matrix61cType) {
+        PyErr_SetString(PyExc_TypeError, "unsupported operand type(s) for +");
+        return NULL;
+    }
+
+    int rows = self->mat->rows, cols = self->mat->cols;
+    matrix *mat;
+    allocate_matrix(&mat, rows, cols);
+    int failed = abs_matrix(mat, self->mat);
+    if (failed) {
+        deallocate_matrix(mat);
+        free(mat);
+        PyErr_SetString(PyExc_ValueError, "failed");
+        return NULL;
+    }
+
+    PyObject *result = Matrix61c_new(&Matrix61cType, NULL, NULL);
+    ((Matrix61c *)result)->mat = mat;
+    ((Matrix61c *)result)->shape = PyTuple_Pack(2, PyLong_FromLong(rows), PyLong_FromLong(cols));
+    return result;
 }
 
 /*
  * Raise numc.Matrix (Matrix61c) to the `pow`th power. You can ignore the argument `optional`.
  */
 static PyObject *Matrix61c_pow(Matrix61c *self, PyObject *pow, PyObject *optional) {
-    /* TODO: YOUR CODE HERE */
+    if (Py_TYPE(self) != &Matrix61cType) {
+        PyErr_SetString(PyExc_TypeError, "unsupported operand type(s) for +");
+        return NULL;
+    }
+
+    int rows = self->mat->rows, cols = self->mat->cols;
+    matrix *mat;
+    allocate_matrix(&mat, rows, cols);
+    int failed = pow_matrix(mat, self->mat, PyLong_AsLong(pow));
+    if (failed) {
+        deallocate_matrix(mat);
+        free(mat);
+        PyErr_SetString(PyExc_ValueError, "non-square matrix powered");
+        return NULL;
+    }
+
+    PyObject *result = Matrix61c_new(&Matrix61cType, NULL, NULL);
+    ((Matrix61c *)result)->mat = mat;
+    ((Matrix61c *)result)->shape = PyTuple_Pack(2, PyLong_FromLong(rows), PyLong_FromLong(cols));
+    return result;
 }
 
 /*
@@ -358,7 +434,10 @@ static PyObject *Matrix61c_pow(Matrix61c *self, PyObject *pow, PyObject *optiona
  * define. You might find this link helpful: https://docs.python.org/3.6/c-api/typeobj.html
  */
 static PyNumberMethods Matrix61c_as_number = {
-    /* TODO: YOUR CODE HERE */
+        .nb_add = (binaryfunc) Matrix61c_add,
+        .nb_multiply = (binaryfunc) Matrix61c_multiply,
+        .nb_absolute = (unaryfunc) Matrix61c_abs,
+        .nb_power = (ternaryfunc) Matrix61c_pow,
 };
 
 
