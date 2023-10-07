@@ -230,6 +230,13 @@ int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  * Remember that pow is defined with matrix multiplication, not element-wise multiplication.
  */
 int pow_matrix(matrix *result, matrix *mat, int pow) {
+    if (pow == 1) {
+        int rows = mat->rows, cols = mat->cols;
+        double *data = malloc(rows * cols * sizeof(double));
+        memcpy(data, mat->data, rows * cols * sizeof(double));
+        reallocate_matrix_with(result, rows, cols, data);
+        return 0;
+    }
     if (mat->rows != mat->cols) {
         return -102;
     }
