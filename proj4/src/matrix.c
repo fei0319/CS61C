@@ -134,7 +134,7 @@ void reallocate_matrix(matrix *mat, int rows, int cols) {
     deallocate_matrix(mat);
     mat->rows = rows;
     mat->cols = cols;
-    mat->data = malloc(rows * cols * sizeof(double));
+    mat->data = NULL;
     mat->ref_cnt = 1;
     mat->parent = NULL;
 }
